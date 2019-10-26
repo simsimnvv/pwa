@@ -1,0 +1,19 @@
+chrome go supportva i safari na ios go supportva
+
+
+
+
+manifest:
+
+name - name of the app, whats gonna show when you click on the splash screen of the app
+short_name - name displayed under the icon of the app
+start_url - what is loaded/opened whe user clicks on the icon
+display - how it will look (standalone - looks like app, browser - looks like a browser)
+background_color - color of the splash screen when app loads in
+theme_color - color of header of the app
+orientation - what orientation the app opens
+icons - masiv s ikonki za razlichnite razmeri na razlichnite ustroistvca
+
+
+
+
