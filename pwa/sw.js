@@ -1,5 +1,5 @@
-const staticCacheName = 'site-static-v2'; // this is the name of the static cache
-const dynamicCacheName = 'site-dynamic-v2';
+const staticCacheName = 'site-static-v1'; // this is the name of the static cache
+const dynamicCacheName = 'site-dynamic-v1';
 
 const assets = [
     '/pwa/',
