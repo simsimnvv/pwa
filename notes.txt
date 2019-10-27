@@ -1,0 +1,169 @@
+// TODO check kude se suprotvat service workerite v koi browseri
+// TODO setup android studio na slojebnia laptop: urok 13 e vajen
+// TODO da si napravia moe saitche
+// TODO vagrant shit na slujebnia
+
+
+chrome go supportva i safari na ios go supportva
+na ios theme color i icons propertite ne se poddurjat?? za tova se slaga link rel i meta tag??
+
+
+
+================== manifest: ==============================
+
+name - name of the app, whats gonna show when you click on the splash screen of the app
+short_name - name displayed under the icon of the app
+start_url - what is loaded/opened whe user clicks on the icon
+display - how it will look (standalone - looks like app, browser - looks like a browser)
+background_color - color of the splash screen when app loads in
+theme_color - color of header of the app
+orientation - what orientation the app opens
+icons - masiv s ikonki za razlichnite razmeri na razlichnite ustroistvca
+
+Da se pokaje v application manifest chastta
+
+=================== service workers: ========================
+
+beating heart of pwa
+allow us to do the things u expect from native apps
+1. load content offline
+2. use background sync - if a user tries to perform an action that requires connection while offline like posting a status update, it will perform the action in the background when the connection is established
+3. use push notifications - app can notify user on a device on something - ex. new content
+
+!!!! important - maybe add pictures
+they are just js files. Usually our js runs on a single thread inside the browser and can access the dom and manipulate html content. Its coupled together.
+Service workers work in a different thread on the browser isolated from the html page. It doesnt have access to the dom so it cant manipulate html. They work in the background even when the app closes. Their job is to listening and reacting to events that happend in the browser (push notigications made from the server to the browser, fetch http requests made from the browser ex. get an image, asset).
+They can react and do something when an event occurs.
+Summary:
+1. Run on a different thread
+2. Do not have acces to the dom
+3. Sit in the background listening to events and reacting to them
+!!!! important
+
+Also they can listen to lifecycle events
+
+=================== service worker lifecycle: ========================
+pak moje da se vzeme kartinka tuk
+
+Registrira se v browsera chrez druj js file
+ako slojim faila v opredelena direktoria, scopa mu shte e samo v tazi direktoria, zatova e preporuchitelno da go slagame v roota
+Purvata stupka e da go registrirame v browsera. Da mu kajem che opredelen fail shte bude registriran kato service worker i shte bude slojen v tozi dopulnitelen thread
+Kogato tova se sluchi, browsera fires the install event, koeto znachi che browsrta instalira workera. Tova e lifecycle event koito moje da slushame vuv service workera.
+naprimer moje da slushame tozi event i da napravim asset caching.
+Install eventa se fireva samo vednuj, kogato servise workera se instalira.
+Kogato se instalira stava activen. Togava browsera fireva active eventa koito pak moje da slushame
+Kogato veche service workiera e aktiven moje da dostupva vsichki failove v direktoriata mu
+Togava veche moje da slusha za vsichki fetch eventi.
+Kogato se refreshne stranicata veche e instaliran niama da se firene pak OSVEN ako koda v service workera ne se e promenil.
+Ako ima promeni novia service worker se instalira i chaka na backgrounda, staria produljava da si vurvi dokato ima pusnati instancii na proekta v browsera. Kogato vsichki stari instancii se zatvoriat, staria worker shte spre i shte se pusne novia koito chaka
+Kogato se pusne novia se puska active eventa.
+Tova e taka za da ne prekusne staria koito moje da pravi neshta v momenta.
+
+1. Install - kogato pochne da se instalira
+2. Active - kogato veche se instaliralo. Ako ima star ne sprian service worker, tova shte go izchaka da spre i dogava shte pusne eventa
+
+i dvata eventa se firevat samo vednuj edin sled drug
+
+
+V javascripta triabva da proverim dali browsera poddurja service workeri zashtoto ne vsichki go mogat
+if('serviceWorker' in navigator)
+navigatora e js obekt koito represenitira browsera i informacia za nego
+navigator.serviceWorker.register('./sw.js') i obiasnie za promisite
+tova vrushta promise sus reg promenliva koiato nosi informacia za registraciata
+
+principno sw rabotiat samo prez https no localhosta ni e izkliuchenieto za da mogat lesno da se razrabotvat
+
+
+(show) event listenera install shte se firene samo vednuj, moje da se pokaje v konzolata kato se refreshne che e taka
+(show ama neshto ne raboti) ako promenim malko faila i refreshnem pak shte se pushne eventa i shte se izpishe consolata
+
+na install moje da se keshirat sravnitelno statichni asseti koito ne se promeniat mnogo kato html, css kartinki
+
+
+Da se pokaje v application service worker chastta -> unregister, update, update on reload
+Moje da se pokajat i niakakvi druji service workeri ot drugi saitove
+
+
+v service workera self e samia service worker
+
+================== lighthouse audit ====================
+vuv chrome browsera moje da se pusne odit da vidish na kolko ot iziskvaniata za pwa ti otgovaria appa
+namira se vuv Audits taba na chrome dev tools
+
+(add to home screen) install bannera ima opredeleni iziskvania za da se poiavi:
+https://developers.google.com/web/fundamentals/app-install-banners
+
+1. The web app is not already installed.
+and prefer_related_applications is not true.
+2. Meets a user engagement heuristic (previously, the user had to interact with the domain for at least 30 seconds, this is not a requirement anymore)
+3. Includes a web app manifest that includes:
+short_name or name
+icons must include a 192px and a 512px sized icons
+start_url
+display must be one of: fullscreen, standalone, or minimal-ui
+4. Served over HTTPS (required for service workers)
+5. Has registered a service worker with a fetch event handler
+
+
+tova e google za android deviceove shte im pusne tova
+
+==================== fetch event =====================
+when we try to get something from a server (css, html js, image, ajax)
+
+tuk moje pak kartinka da se sloji
+
+service workera sluji kato proxi mejdu browsera i servera, zaiavkite minavat prez nego i moje da gi intersepnem
+slusha za fetch eventa i moje da pravin ili ne pravim ili da ne pravim nishto s tiah
+primerno ako sme keshirali dannite shte sprem zaiavkata i shte vurnem kesha
+(show) vuv fetch eventa se sudurja informacia za requesta (kato properti na ovekta)
+
+
+==================== offline mode =======================
+
+tuk moje pak kartinki
+
+application -> cache storage
+
+Staria cache - Browser cache raboti avtomatichno, keshira kartinki no problema s tova e che ne go kontrolirame direktno
+Nashia e tozi koito se kontrolira ot service workerite
+
+Pre-caching: Moje da se napravi taka che kato se zaredi za purvi put da se oburne kum survara da vzeme osnovnite failove (html,css,js) ot survata i da si gi keshira
+Ako e offline moje kogato se napravi zaiavkata da potursi resursite v kesha i da gi vurne
+Moje da se izpolzva i pri losh internet ili daje pri dobur zashtoto e dosta po burzo
+
+==================== offline mode - Pre-caching =======================
+Taka se keshirat osnovnite resursi, statichni
+
+pravi se v install eventa
+
+
+
+cache versioning -> ako se promeni neshto v pre-cachenatia statichen assets, triabva da vdignem versiata na service workera za da se instalira otnovo i da si mine prez eventite i da pre-cachne novite neshta.
+
+v installa se pravi kesha
+v activate se chisti staria kesh
+
+znachi vseki put kato se promenia statichnia content triabva da se vdigne versiata na service workera za da se updatne kesha
+
+
+================== dynamic caching =================================
+
+niama kak da se keshira vsichkia sait sus vsichkite stranici na vednuj. Za tova se pravi dinamichen keshing
+po vreme na fetchovete za dynamic assetite se pravi otdelen cache. I kogato sa offline moje da gledat
+
+
+
+================== offline fallback ==============================
+
+ako dokato sa offline se opitat do stranica do koiato ne sa bili vse oshte
+
+
+
+
+
+
+
+
+
+
+
